@@ -78,14 +78,18 @@ app.get("/events/type/:type",async(req,resp)=>{
 })
 
 //search event by title
-const searchByTitle=async(data)=>{
-    const event=await Event.find({title:{ $regex: data, $options: "i" }});
-    return event;
+const searchByTitleOrTags=async(data)=>{
+    let events=await Event.find({title:{ $regex: data, $options: "i" }});
+    if(!events.length){
+        events=await Event.find({tags:{ $regex: data, $options: "i" }});
+        return events;
+    }
+    return events;
 }
 
 app.get("/events/title/:title",async(req,resp)=>{
     try{    
-        const items=await searchByTitle(req.params.title);
+        const items=await searchByTitleOrTags(req.params.title);
         if(items.length){
             resp.send(items);
         }
