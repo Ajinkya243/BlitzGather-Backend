@@ -119,3 +119,8 @@ app.get("/events/_id/:id",async(req,resp)=>{
         resp.status(500).json({error:"Error occur while fetching."})
     }
 })
+
+//add initial page
+app.get("/",(req,resp)=>{
+    resp.send("Welcome to BlitzGather-Backend API")
+})
