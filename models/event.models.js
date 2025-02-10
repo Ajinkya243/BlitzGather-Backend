@@ -69,7 +69,7 @@ const eventSchema=new mongoose.Schema({
         },
         ageLimit:{
             type:String,
-            default:"18 and above"
+            default:"Welcome All Tech Enthusiast"
         }
     }
 })

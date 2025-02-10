@@ -5,6 +5,8 @@ require('dotenv').config();
 const port=process.env.PORT
 const app=express();
 app.use(express.json());
+const cors=require('cors');
+app.use(cors());
 
 connectDB().then(()=>console.log("Database connected.")).then(()=>app.listen(port,()=>{
     console.log('Express running port:',port);
@@ -127,4 +129,64 @@ app.get("/events/_id/:id",async(req,resp)=>{
 //add initial page
 app.get("/",(req,resp)=>{
     resp.send("Welcome to BlitzGather-Backend API")
+})
+
+//delete by id
+const deleteById=async(data)=>{
+    const event=await Event.findByIdAndDelete(data);
+}
+
+app.delete("/events/delete/:id",async(req,resp)=>{
+    try{
+        const event=await deleteById(req.params.id);
+        resp.send("Event deleted")
+    }
+    catch(error){
+        resp.status(500).json({error:"Error occur while fetching"})
+    }
+})
+
+//update by id
+
+const updateEventById=async(id,data)=>{
+    const event=await Event.findByIdAndUpdate(id,data,{new:true});
+    return event;
+}
+
+app.post("/events/:id",async(req,resp)=>{
+    try{
+        const event=await updateEventById(req.params.id,req.body);
+        if(event){
+            resp.send(event);
+        }
+        else{
+            resp.status(404).json({message:"Event not found"})
+        }
+        
+    }
+    catch(error){
+        resp.status(500).json({error:"Error occur while fetching"})
+    }
+})
+
+//update event by title
+const updateByTitle=async(title,data)=>{
+    const event=await Event.findOneAndUpdate({title:title},data,{new:true})
+    return event;
+}
+
+app.post("/events/title/:title",async(req,resp)=>{
+    try{
+        const event=await updateByTitle(req.params.title,req.body);
+        if(event){
+            resp.send(event);
+        }
+        else{
+            resp.status(404).json({message:"Event not found"})
+        }
+        
+    }
+    catch(error){
+        resp.status(500).json({error:"Error occur while fetching"})
+    }
 })
